@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Model artifacts (huge files)
+*.pth
+*.bin
+*.safetensors
+checkpoints/
+model_pths/
+
+# Eval results (regenerable)
+results_*.jsonl
+logs/
+*.log
+
+# HuggingFace cache (lives in scratch anyway)
+hf_cache/
+.cache/
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+
+# Notebooks (optional - keep these if you use them)
+.ipynb_checkpoints/# Python-generated files
+
