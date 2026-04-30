@@ -30,3 +30,4 @@ hf_cache/
 # Notebooks (optional - keep these if you use them)
 .ipynb_checkpoints/# Python-generated files
 
+checkpoints/
