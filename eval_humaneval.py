@@ -11,8 +11,8 @@ def extract_code(text: str) -> str:
     """Pull the function body out of model output."""
     match = re.search(r"```(?:python)?\s*\n(.*?)```", text, re.DOTALL)
     if match:
-        return match.group(1).strip()
-    return text.strip()
+        return match.group(1).rstrip()
+    return text.rstrip()
 
 
 def evaluate_completion(problem: dict, completion: str) -> bool:

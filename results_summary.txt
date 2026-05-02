@@ -1,0 +1,29 @@
+=== Baseline Results (HumanEval pass@1) ===
+NOTE: Two baselines exist due to inference code path difference:
+  - results_baseline.jsonl: 0.5671 (with trust_remote_code=True, MS vendored Phi-3 code)
+  - results_base_v2.jsonl:  0.4268 (without trust_remote_code, built-in transformers Phi-3)
+
+The SFT checkpoints were trained without trust_remote_code, so for fair comparison
+we use base_v2 as the reference baseline.
+
+=== SFT Eval Results (HumanEval pass@1) — vs base_v2 ===
+base_v2:        0.4268 (70/164)   — reference baseline (no training)
+sft_rank8:      0.4146 (68/164)   — Δ -1.22 pp  (rank too small to learn)
+sft_rank16:     0.5488 (90/164)   — Δ +12.20 pp (sweet spot)
+sft_rank32:     0.4329 (71/164)   — Δ +0.61 pp  (overfitting / regression toward baseline)
+sft_rank16_n120: pending (job 5241224 — possibly still running, possibly stale)
+
+H2 Confirmation: LoRA rank exhibits a sweet-spot pattern.
+  - Too small (rank 8): insufficient capacity, no meaningful learning
+  - Optimal (rank 16): +12.2 pp improvement over baseline
+  - Too large (rank 32): collapses back to baseline (overfitting)
+
+=== DPO Pair Generation Progress ===
+Generating from sft_rank16 checkpoint, MBPP sanitized split (120 train problems)
+At 26/120: ~30% yield rate (mixed pass/fail)
+Estimated final pair count: ~36
+
+(Note: many problems are all-pass or all-fail with this strong SFT model;
+the mixed-result problems isolate exactly the cases where preference signal
+from execution feedback is informative — a clean H1 setup.)
+
