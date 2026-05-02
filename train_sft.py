@@ -2,25 +2,31 @@
 Supervised fine-tuning with LoRA on MBPP for code generation.
 Uses Microsoft Phi-3.5-mini-instruct as the base model.
 """
+
 import argparse
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import LoraConfig, get_peft_model
 from trl import SFTTrainer, SFTConfig
 
-
 MODEL_NAME = "microsoft/Phi-3.5-mini-instruct"
 
 
-def format_mbpp_example(example):
-    """Format MBPP into a prompt + completion text string."""
-    # MBPP "sanitized" uses 'prompt' for the description, not 'text'
+def format_mbpp_example(example, tokenizer):
+    """Format MBPP into Phi-3.5 chat template."""
     description = example.get("prompt") or example.get("text") or ""
-    prompt = f"# {description}\n"
+    user_content = description
     if example.get("test_list"):
-        prompt += f"# Example: {example['test_list'][0]}\n"
-    completion = example["code"]
-    return {"text": prompt + completion}
+        user_content += f"\n\nExample test:\n{example['test_list'][0]}"
+
+    messages = [
+        {"role": "user", "content": user_content},
+        {"role": "assistant", "content": example["code"]},
+    ]
+
+    text = tokenizer.apply_chat_template(messages, tokenize=False)
+    return {"text": text}
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -37,7 +43,7 @@ def main():
     args = parser.parse_args()
 
     print(f"Loading {MODEL_NAME}...")
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -45,7 +51,6 @@ def main():
         MODEL_NAME,
         dtype="bfloat16",
         device_map="cuda",
-        trust_remote_code=True,
     )
 
     print("Configuring LoRA...")
@@ -66,7 +71,7 @@ def main():
     print("Loading MBPP dataset...")
     dataset = load_dataset("mbpp", "sanitized")
     train_data = dataset["train"].map(
-        format_mbpp_example,
+        lambda x: format_mbpp_example(x, tokenizer),
         remove_columns=dataset["train"].column_names,
     )
     if args.max_train_samples:
@@ -95,7 +100,6 @@ def main():
 
     print("Starting training...")
     trainer.train()
-
     print(f"Saving to {args.output_dir}")
     trainer.save_model(args.output_dir)
     tokenizer.save_pretrained(args.output_dir)
@@ -104,5 +108,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
