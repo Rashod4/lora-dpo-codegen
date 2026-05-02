@@ -69,7 +69,7 @@ def main():
     model.print_trainable_parameters()
 
     print("Loading MBPP dataset...")
-    dataset = load_dataset("mbpp", "sanitized")
+    dataset = load_dataset("mbpp", "full")
     train_data = dataset["train"].map(
         lambda x: format_mbpp_example(x, tokenizer),
         remove_columns=dataset["train"].column_names,
