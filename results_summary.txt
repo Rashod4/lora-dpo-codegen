@@ -1,0 +1,6 @@
+=== Baseline Results ===
+Model: microsoft/Phi-3.5-mini-instruct (no training)
+Prompt format: raw HumanEval signature (no chat template)
+pass@1: 0.5671 (93/164)
+Date: Sat May  2 04:02:01 PM EDT 2026
+Job ID: 5241089
