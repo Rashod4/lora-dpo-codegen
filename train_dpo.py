@@ -97,7 +97,6 @@ def main():
         save_total_limit=1,
         report_to="none",
         max_length=1024,
-        max_prompt_length=512,
     )
 
     trainer = DPOTrainer(
