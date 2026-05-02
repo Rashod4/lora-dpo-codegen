@@ -35,6 +35,7 @@ def main():
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch_size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=2e-4)
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output_dir", type=str, default="checkpoints/sft_rank16")
     parser.add_argument(
         "--max_train_samples", type=int, default=None,
@@ -89,6 +90,7 @@ def main():
         save_strategy="epoch",
         save_total_limit=2,
         report_to="none",
+        seed=args.seed,
     )
 
     trainer = SFTTrainer(
