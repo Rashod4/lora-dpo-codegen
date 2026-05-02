@@ -31,3 +31,4 @@ hf_cache/
 .ipynb_checkpoints/# Python-generated files
 
 checkpoints/
+dpo_pairs_fake.jsonl
