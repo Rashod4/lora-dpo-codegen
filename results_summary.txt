@@ -7,23 +7,31 @@ The SFT checkpoints were trained without trust_remote_code, so for fair comparis
 we use base_v2 as the reference baseline.
 
 === SFT Eval Results (HumanEval pass@1) — vs base_v2 ===
-base_v2:        0.4268 (70/164)   — reference baseline (no training)
-sft_rank8:      0.4146 (68/164)   — Δ -1.22 pp  (rank too small to learn)
-sft_rank16:     0.5488 (90/164)   — Δ +12.20 pp (sweet spot)
-sft_rank32:     0.4329 (71/164)   — Δ +0.61 pp  (overfitting / regression toward baseline)
-sft_rank16_n120: pending (job 5241224 — possibly still running, possibly stale)
+base_v2:           0.4268 (70/164)   — reference baseline (no training)
 
-H2 Confirmation: LoRA rank exhibits a sweet-spot pattern.
-  - Too small (rank 8): insufficient capacity, no meaningful learning
-  - Optimal (rank 16): +12.2 pp improvement over baseline
-  - Too large (rank 32): collapses back to baseline (overfitting)
+LoRA rank ablation (n=374 for all):
+  sft_rank8:       0.4146 (68/164)   — Δ -1.22 pp
+  sft_rank12:      pending
+  sft_rank16:      0.5488 (90/164)   — Δ +12.20 pp ★ primary SFT model
+  sft_rank24:      pending
+  sft_rank32:      0.4329 (71/164)   — Δ +0.61 pp
 
-=== DPO Pair Generation Progress ===
-Generating from sft_rank16 checkpoint, MBPP sanitized split (120 train problems)
-At 26/120: ~30% yield rate (mixed pass/fail)
-Estimated final pair count: ~36
+Data-size ablation (rank=16):
+  sft_rank16_n120: 0.3841 (63/164)   — Δ -4.27 pp
+  sft_rank16_n200: pending
+  sft_rank16_n374: 0.5488 (90/164)   — same as sft_rank16 above
 
-(Note: many problems are all-pass or all-fail with this strong SFT model;
-the mixed-result problems isolate exactly the cases where preference signal
-from execution feedback is informative — a clean H1 setup.)
+Seed variance (rank=16, n=374):
+  sft_rank16_seed1: pending
+  sft_rank16_seed2: pending
+  sft_rank16_seed3: pending
 
+=== DPO ===
+Pairs generated:   65 (dpo_pairs.jsonl, from sft_rank16 + MBPP sanitized)
+DPO training:      Person A (in progress)
+DPO eval:          Awaiting checkpoint
+
+=== Hypotheses Status ===
+H1 (DPO improves pass@1 more than pass@10): pending DPO eval
+H2 (LoRA rank sweet spot): preliminary support — rank 16 best so far; finer sweep + seeds in flight
+H3 (DPO gain shrinks as SFT data scales): preliminary SFT-only data — needs DPO on n120/n200/n374
