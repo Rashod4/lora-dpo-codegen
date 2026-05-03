@@ -14,7 +14,6 @@ checkpoints/
 model_pths/
 
 # Eval results (regenerable)
-results_*.jsonl
 logs/
 *.log
 

@@ -10,9 +10,8 @@ print(f"Loading {MODEL_NAME}...")
 tok = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
-    dtype="bfloat16",
+    torch_dtype="bfloat16",
     device_map="cuda",
-    trust_remote_code=True,
 )
 model.eval()
 
